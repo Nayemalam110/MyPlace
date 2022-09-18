@@ -18,21 +18,31 @@ class PlaceList extends StatelessWidget {
             ),
           ],
         ),
-        body: Consumer<MyPlace>(
-            builder: ((context, value, child) => value.items.isEmpty
-                ? Center(
-                    child: Text('No item'),
-                  )
-                : ListView.builder(
-                    itemBuilder: (context, i) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: FileImage(value.items[i].image!),
-                        ),
-                        title: Text(value.items[i].title),
-                      );
-                    },
-                    itemCount: value.items.length,
-                  ))));
+        body: FutureBuilder(
+          future:
+              Provider.of<MyPlace>(context, listen: false).fetchAndSetPlaces(),
+          builder: (context, snapshot) =>
+              snapshot.connectionState == ConnectionState.waiting
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Consumer<MyPlace>(
+                      builder: ((context, value, child) => value.items.isEmpty
+                          ? Center(
+                              child: Text('No item'),
+                            )
+                          : ListView.builder(
+                              itemBuilder: (context, i) {
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage:
+                                        FileImage(value.items[i].image!),
+                                  ),
+                                  title: Text(value.items[i].title),
+                                );
+                              },
+                              itemCount: value.items.length,
+                            ))),
+        ));
   }
 }
